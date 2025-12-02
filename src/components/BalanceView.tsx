@@ -15,7 +15,7 @@ function BalanceView() {
       </div>
 
       <div className="mb-6">
-        <h3 className="text-gray-600 my-2 text-lg">Individual Balances</h3>
+        <h3 className="text-gray-600 my-2 text-lg">Individual Balance</h3>
         {people.map((person) => (
           <div
             key={person}
