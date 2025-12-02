@@ -1,134 +1,136 @@
-💰 Expense Splitter — React + TypeScript (Production-Ready)
+# 💰 Expense Splitter — React + TypeScript (Production-Ready)
 
 A clean, responsive, and fully functional group expense management application built using React + TypeScript, featuring shared state management, real-time balance calculations, debt simplification, toast notifications, and a production-quality UI/UX.
 
 This application helps groups (friends, roommates, travel groups, teams) record expenses and instantly see who owes whom.
 
-✨ Features
-👥 People Management
+### ✨ Features
+### 👥 People Management
 
-Add people to the group
+- **Add people to the group**
 
-Remove people with data-integrity checks
+- **Remove people with data-integrity checks**
 
-Toast notifications for feedback
+- **Toast notifications for feedback**
 
-Validations to prevent accidental actions
+- **Validations to prevent accidental actions**
 
-💸 Expense Management
+### 💸 Expense Management
 
-Add expenses with:
+### Add expenses with:
 
-Description
+- **Description**
 
-Amount
+- **Amount**
 
-Date
+- **Date**
 
-Paid by
+- **Paid by**
 
-Split between
+- **Split between**
 
-Equal or custom splits
+- **Equal or custom splits**
 
-Delete expenses
+- **Delete expenses**
 
-Real-time UI updates after every mutation
+- **Real-time UI updates after every mutation**
 
-Production-style toast messages using react-hot-toast
+- **Production-style toast messages using react-hot-toast**
 
-📊 Live Balance Calculation
+### 📊 Live Balance Calculation
 
-Total group spending
+### Total group spending
 
-Per-person:
+### Per-person:
 
-Total paid
+- **Total paid**
 
-Total owed
+- **Total owed**
 
-Net balance
+- **Net balance**
 
-‘Owes’ vs ‘Is owed’ UI states
+‘- **Owes’ vs ‘Is owed’ UI states**
 
-Zero balance detection (Settled Up)
+- **Zero balance detection (Settled Up)**
 
-🔄 Debt Simplification
+### 🔄 Debt Simplification
 
-Minimizes number of transactions
+- **Minimizes number of transactions**
 
-Shows suggested settlements (who pays whom)
+- **Shows suggested settlements (who pays whom)**
 
-Integer-based calculations to avoid floating-point errors
+- **Integer-based calculations to avoid floating-point errors**
 
-🎨 Modern UI & UX
+### 🎨 Modern UI & UX
 
-Fully responsive
+- **Fully responsive**
 
-Modern card-based layout
+- **Modern card-based layout**
 
-Smooth hover / elevation states
+- **Smooth hover / elevation states**
 
-Clean forms with validations
+- **Clean forms with validations**
 
-Expandable expense items
+- **Expandable expense items**
 
-Subtle micro-interactions
+- **Subtle micro-interactions**
 
-💾 Centralized State Management
+### 💾 Centralized State Management
 
-Custom reducer + context API
+- **Custom reducer + context API**
 
-Predictable, testable state updates
+- **Predictable, testable state updates**
 
-Actions, selectors & utilities for clean architecture
+- **Actions, selectors & utilities for clean architecture**
 
-🧪 Unit Tests
+### 🧪 Unit Tests
 
-Vitest test environment
+- **Vitest test environment**
 
-Component-level and function-level tests
+- **Component-level and function-level tests**
 
-Utility logic thoroughly validated
+- **Utility logic thoroughly validated**
 
-🛠️ Tech Stack
-Frontend
+### 🛠️ Tech Stack
 
-React
+### Frontend
 
-TypeScript
+- **React**
 
-Vite
+- **TypeScript**
 
-CSS + Tailwind-like utility classes
+- **Vite**
 
-State Management
+- **CSS + Tailwind-like utility classes**
 
-Custom reducer + React Context
+- **State Management**
 
-Clean action definitions & selectors
+- **Custom reducer + React Context**
 
-Utilities
+- **Clean action definitions & selectors**
 
-Custom calculation engine:
+- **Utilities**
 
-calculateTotals.ts
+- **Custom calculation engine:**
 
-simplifyDebts.ts
+- **calculateTotals.ts**
 
-format.ts
+- **simplifyDebts.ts**
 
-Notifications
+- **format.ts**
 
-react-hot-toast — production-grade toast notifications
+- **Notifications**
 
-Testing
+- **react-hot-toast — production-grade toast notifications**
 
-Vitest
+- **Testing**
 
-React Testing Library
+- **Vitest**
 
-📁 Project Structure
+- **React Testing Library**
+
+### 📁 Project Structure
+
 src/
 ├── components/
 │   ├── PeopleManager.tsx
@@ -151,98 +153,60 @@ src/
 ├── main.tsx
 └── initialData.ts
 
-🚀 Getting Started
-1️⃣ Install dependencies
-npm install
-
-2️⃣ Start development server
-npm run dev
-
-3️⃣ Run unit tests
-npm test
-
-🧩 Core Logic Overview
-✔ calculateTotals.ts
-
-Uses integer-based cents to avoid floating-point issues
-
-Handles:
-
-Equal split
-
-Custom split
-
-Missing or partial custom amounts
-
-Remaining differences assigned deterministically
-
-Produces:
-
-Per-person paid, owed, net
-
-Group totals
-
-✔ simplifyDebts.ts
-
-Converts net balances into minimal transactions
-
-Greedy algorithm matching debtors → creditors
-
-Ensures no unmatched amounts remain
-
-🛡️ Data Integrity Rules
-
-People cannot be removed if referenced in an expense
-
-Expenses require at least one participant
-
-Custom split amounts must match total (or require confirmation)
-
-Every action validated with toast messages
-
-🖼️ Screenshots (Optional)
-
-You can add screenshots here (as your project folder already contains screenshots/):
-
-![Dashboard](./screenshots/dashboard.png)
-![Add Expense](./screenshots/add-expense.png)
-![Balance View](./screenshots/balance-view.png)
-
-📦 Production Build
-npm run build
 
 
-Build output goes into dist/ and is ready for hosting on:
 
-Netlify
+### 🚀 Getting Started
+- **1️⃣ Install dependencies**
+- **npm install**
 
-Vercel
+### 2️⃣ Start development server
+- **npm run dev**
 
-GitHub Pages
+### 3️⃣ Run unit tests
+- **npm test**
 
-Firebase Hosting
+### 🧩 Core Logic Overview
+- **✔ calculateTotals.ts**
 
-AWS Amplify
+- **Uses integer-based cents to avoid floating-point issues**
 
-🔧 Environment / Configuration
+### Handles:
 
-This project does not require sensitive environment variables.
-All data is stored in local state only.
+- **Equal split**
 
-📚 Future Enhancements (Recommended)
+- **Custom split**
 
-Persistent localStorage sync
+- **Missing or partial custom amounts**
 
-Export/share settlement report
+- **Remaining differences assigned deterministically**
 
-Support for multiple groups
+### Produces:
 
-Currency selection
+- **Per-person paid, owed, net**
 
-Dark mode
+- **Group totals**
 
-Edit existing expenses
+- **✔ simplifyDebts.ts**
 
-👨‍💻 Author & Maintainer
+- **Converts net balances into minimal transactions**
 
-Mohan
+- **Greedy algorithm matching debtors → creditors**
+
+- **Ensures no unmatched amounts remain**
+
+### 🛡️ Data Integrity Rules
+
+- **People cannot be removed if referenced in an expense**
+
+- **Expenses require at least one participant**
+
+- **Custom split amounts must match total (or require confirmation)**
+
+- **Every action validated with toast messages**
+
+
+
+### 📦 Production Build
+- **npm run build**
+
