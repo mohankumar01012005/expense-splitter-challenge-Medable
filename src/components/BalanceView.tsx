@@ -1,5 +1,3 @@
-
-
 import React from 'react'
 import { useAppState } from '../state'
 import { getTotals, getSettlements } from '../state/selectors'
@@ -24,25 +22,25 @@ const BalanceView: React.FC = () => {
         🪙 Balances
       </h2>
 
-      {/* Total banner */}
+      
       <div className="mb-6">
         <div className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 text-white">
           <span className="text-sm">Total Group Spending:</span>
           <span data-testid="total-group-amount" className="text-2xl font-semibold">{totalFormatted}</span>
-
-
         </div>
       </div>
 
-      {/* Individual balances */}
+      
       <div className="mb-6">
         <h3 className="text-gray-600 mb-3 text-lg">Individual Balances</h3>
         <div className="space-y-3">
           {state.people.map((person) => {
             const t = totals.perPerson[person.id] ?? { paid: 0, owed: 0, net: 0 }
-            const net = Number((t.net).toFixed(2))
-            const isPositive = net > 0
-            const isZero = net === 0
+            const netCents = t.net 
+            const isPositive = netCents > 0
+            const isZero = netCents === 0
+            const absFormatted = formatCurrency(Math.abs(netCents))
+            const sign = isZero ? '' : (isPositive ? '+' : '-')
             return (
               <div
                 key={person.id}
@@ -56,8 +54,8 @@ const BalanceView: React.FC = () => {
                     {isZero ? 'settled up' : isPositive ? 'is owed' : 'owes'}
                   </div>
                   <div className={`${isZero ? 'text-gray-700' : isPositive ? 'text-green-700' : 'text-red-700'} font-semibold`}>
-                    {isZero ? formatCurrency(0) : (isPositive ? '+' : '-') + formatCurrency(Math.abs(net)).replace('$', '')}
-                    {/* We intentionally show sign nearby in design; formatCurrency already includes "$" */}
+                    {isZero ? formatCurrency(0) : `${sign}${absFormatted}`}
+                    
                   </div>
                 </div>
               </div>
@@ -66,7 +64,7 @@ const BalanceView: React.FC = () => {
         </div>
       </div>
 
-      {/* Suggested settlements */}
+      
       <div>
         <h3 className="text-gray-600 mb-3 text-lg">💸 Suggested Settlements</h3>
         <p className="text-sm text-gray-500 mb-3">Minimum transactions to settle all debts:</p>

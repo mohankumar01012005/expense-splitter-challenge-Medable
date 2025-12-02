@@ -1,24 +1,30 @@
 import React, { useState } from 'react'
 import { useAppState, useAppDispatch } from '../state'
 import { ADD_PERSON, REMOVE_PERSON } from '../state/actions'
+import toast from 'react-hot-toast' // <- fixed import (default export)
 
 function PeopleManager() {
-   const { people } = useAppState()
+  const { people } = useAppState()
   const dispatch = useAppDispatch()
   const [value, setValue] = useState('')
 
   function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     const name = value.trim()
-    if (!name) return
-    
+    if (!name){
+      toast.error('Please enter a name.')
+      return
+    }
+
     dispatch({ type: ADD_PERSON, payload: { name } } as any)
     setValue('')
+    toast.success(`${name} added to group`)
   }
 
   function onRemove(id: string) {
     if (!confirm('Remove this person? This will be blocked if person is referenced by expenses.')) return
     dispatch({ type: REMOVE_PERSON, payload: { personId: id } } as any)
+    toast.success('Person removal requested')
   }
 
   return (
