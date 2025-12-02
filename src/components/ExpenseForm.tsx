@@ -74,7 +74,7 @@ function ExpenseForm() {
     if (!confirm(
       `Custom amounts sum to ${formatCurrency(customSum)} but total is ${formatCurrency(cents)}. Apply difference ${formatCurrency(diff)} to first participant?`
     )){
-       toast.info('Expense creation cancelled')
+       toast('Expense creation cancelled')
 
        return;
     }
