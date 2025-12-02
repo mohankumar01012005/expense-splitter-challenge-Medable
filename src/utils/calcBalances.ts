@@ -34,11 +34,10 @@ export type TotalsResult = {
   perPerson: PerPersonTotals
 }
 
-//  helper
+
 function sum(nums: number[]) {
   return nums.reduce((s, n) => s + n, 0)
 }
-
 
 export function calculateTotals(
   people: Person[],
@@ -50,12 +49,34 @@ export function calculateTotals(
     perPerson[p.id] = { balance: 0, paid: 0, owed: 0, net: 0 }
   }
 
+  
+  const knownIds = new Set(people.map((p) => p.id))
+
   let totalGroup = 0
 
   for (const exp of expenses) {
     
     if (!exp || typeof exp.amount !== 'number' || exp.amount <= 0) continue
     if (!exp.splitBetween || exp.splitBetween.length === 0) continue
+
+    
+    if (exp.paidBy && !knownIds.has(exp.paidBy)) {
+      
+      console.warn(
+        `[calculateTotals] Expense ${exp.id} paidBy references unknown person id "${exp.paidBy}". Paid amount will not be assigned to any person.`
+      )
+    }
+
+    
+    const unknownSplitIds = exp.splitBetween.filter((pid) => !knownIds.has(pid))
+    if (unknownSplitIds.length > 0) {
+      
+      console.warn(
+        `[calculateTotals] Expense ${exp.id} splitBetween references unknown person ids: ${unknownSplitIds.join(
+          ', '
+        )}. Those shares will be ignored.`
+      )
+    }
 
     totalGroup += exp.amount
 
@@ -69,16 +90,16 @@ export function calculateTotals(
       const baseShare = Math.floor(exp.amount / count)
       const remainder = exp.amount - baseShare * count 
 
-      
       for (let i = 0; i < count; i++) {
         const pid = exp.splitBetween[i]
         const extra = i < remainder ? 1 : 0
         const share = baseShare + extra
         if (perPerson[pid]) perPerson[pid].owed += share
+        
       }
     } else if (exp.splitType === 'custom') {
-      
       if (!exp.customAmounts) {
+        
         const count = exp.splitBetween.length
         const baseShare = Math.floor(exp.amount / count)
         const remainder = exp.amount - baseShare * count
@@ -100,6 +121,7 @@ export function calculateTotals(
           const finalAmt = i === 0 && diff !== 0 ? amt + diff : amt
           if (i === 0) diff = 0
           if (perPerson[pid]) perPerson[pid].owed += finalAmt
+          
         }
       }
     } else {
@@ -115,17 +137,17 @@ export function calculateTotals(
     }
   }
 
-  // finalize: net = paid - owed (also set balance)
+  
   for (const pid of Object.keys(perPerson)) {
     const p = perPerson[pid]
     p.net = p.paid - p.owed
     p.balance = p.net
   }
 
-return {
-  total: totalGroup,
-  totalGroupSpending: totalGroup,
-  totalGroup,
-  perPerson
-}
+  return {
+    total: totalGroup,
+    totalGroupSpending: totalGroup,
+    totalGroup,
+    perPerson
+  }
 }

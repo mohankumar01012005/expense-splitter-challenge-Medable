@@ -2,11 +2,20 @@ import { useState } from 'react'
 import { useAppState, useAppDispatch } from '../state'
 import { DELETE_EXPENSE } from '../state/actions'
 import { formatCurrency } from '../utils/format'
+import toast from 'react-hot-toast'
 
 function ExpenseList() {
   const { expenses, people } = useAppState()
   const dispatch = useAppDispatch()
   const [expandedId, setExpandedId] = useState<string | null>(null)
+
+  function equalSplitShares(amount: number, splitBetween: string[]) {
+    const count = splitBetween.length;
+    if (count === 0) return [];
+    const base = Math.floor(amount / count);
+    const remainder = amount - base * count; // 0..count-1
+    return splitBetween.map((_, i) => base + (i < remainder ? 1 : 0));
+  }
 
   const formatDate = (dateString: string | undefined) => {
     if (!dateString) return ''
@@ -27,6 +36,7 @@ function ExpenseList() {
   function onDelete(id: string) {
     if (!confirm('Delete this expense?')) return
     dispatch({ type: DELETE_EXPENSE, payload: { expenseId: id } } as any)
+    toast.success('Expense deleted')
   }
 
   function toggleExpand(id: string) {
@@ -63,7 +73,7 @@ function ExpenseList() {
                      <button
                     aria-label={isOpen ? 'Collapse' : 'Expand'}
                     onClick={() => toggleExpand(expense.id)}
-                    className="flex items-center justify-center text-gray-700 hover:text-gray-900 transition-transform"
+                    className="flex items-center justify-center text-gray-700 hover:text-gray-900 transition-transform "
                   >
                     <svg
                       className={`w-3 h-3 transition-transform ${isOpen ? 'rotate-90' : ''}`}
@@ -78,46 +88,48 @@ function ExpenseList() {
                      <button
                         aria-label="Delete"
                         onClick={() => onDelete(expense.id)}
-                        className="bg-red-600 text-white px-2 sm:px-3 py-1 rounded-md hover:bg-red-700 transition-colors"
+                        className="bg-red-600 text-white px-2 sm:px-3 py-1 rounded-md hover:bg-red-700 transition-colors "
                       >
                         <span className="hidden sm:inline">Delete</span>
-                        <span className="sm:hidden">🗑</span>
+                        <span className="sm:hidden ">🗑</span>
                       </button>
 
-
-
-                      
                     </div>
                   </div>
                 </div>
 
-                {/* Expanded details */}
+                
                 {isOpen && (
                   <div className="px-4 pb-4 pt-2 border-t border-gray-200 bg-white">
-                    {/* Show split details */}
+                    
                     <div className="mb-3">
                       <div className="font-medium text-gray-700 mb-2 text-sm sm:text-base">Split Details {expense.splitType === 'custom' ? '(custom)' : '(equal)'}</div>
 
                       <div className="space-y-2">
-                        {expense.splitBetween.map((pid: string) => {
-                          const personName = nameFor(pid)
-                          const amountNumber =
-                            expense.splitType === 'custom'
-                              ? (customMap[pid] ?? 0)
-                              : Math.round((expense.amount / expense.splitBetween.length) / 1) // fallback; values are cents here
-                          // If amounts are stored in cents, ensure display uses formatCurrency
-                          const display = typeof amountNumber === 'number' ? formatCurrency(amountNumber) : formatCurrency(Number(amountNumber))
-                          return (
-                            <div key={pid} className="flex justify-between items-center bg-gray-50 p-3 rounded text-sm sm:text-base">
-                              <div className="text-gray-800">{personName}</div>
-                              <div className="text-red-600 font-semibold">owes {display}</div>
-                            </div>
-                          )
-                        })}
+                        {(() => {
+                          
+                          const shares = equalSplitShares(expense.amount, expense.splitBetween);
+
+                          return expense.splitBetween.map((pid: string, idx: number) => {
+                            const personName = nameFor(pid)
+                            const amountNumber =
+                              expense.splitType === 'custom'
+                                ? (customMap[pid] ?? 0)
+                                : (shares[idx] ?? 0)
+                            
+                            const display = typeof amountNumber === 'number' ? formatCurrency(amountNumber) : formatCurrency(Number(amountNumber))
+                            return (
+                              <div key={pid} className="flex justify-between items-center bg-gray-50 p-3 rounded text-sm sm:text-base">
+                                <div className="text-gray-800">{personName}</div>
+                                <div className="text-red-600 font-semibold">owes {display}</div>
+                              </div>
+                            )
+                          })
+                        })()}
                       </div>
                     </div>
 
-                    {/* Delete button area (redundant action in expanded view per mockup) */}
+                    
                     <div className="pt-3 border-t border-gray-100 flex justify-end">
                       <button
                         onClick={() => onDelete(expense.id)}

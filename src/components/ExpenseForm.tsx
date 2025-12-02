@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { useAppState, useAppDispatch } from '../state'
 import { ADD_EXPENSE } from '../state/actions'
-import { parseDollarsToCents } from '../utils/format'
+import { formatCurrency, parseDollarsToCents } from '../utils/format'
+import toast from 'react-hot-toast'
 
 function ExpenseForm() {
   const { people } = useAppState()
@@ -32,11 +33,23 @@ function ExpenseForm() {
   function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     
-    if (!description.trim()) return alert('Please enter a description.')
+   if (!description.trim()) {
+      toast.error('Please enter a description.')
+      return
+    }
     const cents = parseDollarsToCents(amount)
-    if (cents <= 0) return alert('Please enter a valid amount.')
-    if (!paidBy) return alert('Select who paid.')
-    if (!splitBetween.length) return alert('Select at least one person to split between.')
+    if (cents <= 0) {
+      toast.error('Please enter a valid amount.')
+      return
+    }
+    if (!paidBy) {
+      toast.error('Select who paid.')
+      return
+    }
+    if (!splitBetween.length) {
+      toast.error('Select at least one person to split between.')
+      return
+    }
 
     const expense: any = {
       description: description.trim(),
@@ -48,16 +61,31 @@ function ExpenseForm() {
       splitType,
     }
 
-    if (splitType === 'custom') {
-      
-      const cm: Record<string, number> = {}
-      for (const pid of splitBetween) {
-        cm[pid] = parseDollarsToCents(customMap[pid] ?? '0')
-      }
-      expense.customAmounts = cm
+   if (splitType === 'custom') {
+  const cm: Record<string, number> = {};
+  let customSum = 0;
+  for (const pid of splitBetween) {
+    const v = parseDollarsToCents(customMap[pid] ?? '0');
+    cm[pid] = v;
+    customSum += v;
+  }
+  if (customSum !== cents) {
+    const diff = cents - customSum;
+    if (!confirm(
+      `Custom amounts sum to ${formatCurrency(customSum)} but total is ${formatCurrency(cents)}. Apply difference ${formatCurrency(diff)} to first participant?`
+    )){
+       toast.info('Expense creation cancelled')
+
+       return;
     }
+    // or you could reject submit instead of applying the diff automatically
+  }
+  expense.customAmounts = cm;
+}
+
 
     dispatch({ type: ADD_EXPENSE, payload: expense } as any)
+    toast.success('Expense added')
 
     
     setDescription('')
