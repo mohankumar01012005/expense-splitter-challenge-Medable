@@ -1,7 +1,72 @@
-import { initialPeople } from '../initialData';
+import React, { useState, useEffect } from 'react'
+import { useAppState, useAppDispatch } from '../state'
+import { ADD_EXPENSE } from '../state/actions'
+import { parseDollarsToCents } from '../utils/format'
 
 function ExpenseForm() {
-  const people = initialPeople;
+  const { people } = useAppState()
+  const dispatch = useAppDispatch()
+
+  const [description, setDescription] = useState('')
+  const [amount, setAmount] = useState('') 
+  const [date, setDate] = useState('')
+  const [paidBy, setPaidBy] = useState<string>('')
+  const [splitType, setSplitType] = useState<'equal' | 'custom'>('equal')
+  const [splitBetween, setSplitBetween] = useState<string[]>([])
+  const [customMap, setCustomMap] = useState<Record<string, string>>({})
+
+
+    useEffect(() => {
+    if (people.length && !paidBy) {
+      setPaidBy(people[0].id)
+    }
+    if (people.length && splitBetween.length === 0) {
+      setSplitBetween(people.map((p) => p.id))
+    }
+  }, [people])
+
+  function toggleSplit(pid: string) {
+    setSplitBetween((prev) => (prev.includes(pid) ? prev.filter((x) => x !== pid) : [...prev, pid]))
+  }
+
+  function onSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    
+    if (!description.trim()) return alert('Please enter a description.')
+    const cents = parseDollarsToCents(amount)
+    if (cents <= 0) return alert('Please enter a valid amount.')
+    if (!paidBy) return alert('Select who paid.')
+    if (!splitBetween.length) return alert('Select at least one person to split between.')
+
+    const expense: any = {
+      description: description.trim(),
+      amount: cents,
+      date: date || new Date().toISOString(),
+      
+      paidBy,
+      splitBetween,
+      splitType,
+    }
+
+    if (splitType === 'custom') {
+      
+      const cm: Record<string, number> = {}
+      for (const pid of splitBetween) {
+        cm[pid] = parseDollarsToCents(customMap[pid] ?? '0')
+      }
+      expense.customAmounts = cm
+    }
+
+    dispatch({ type: ADD_EXPENSE, payload: expense } as any)
+
+    
+    setDescription('')
+    setAmount('')
+    setDate('')
+    setSplitType('equal')
+    setCustomMap({})
+    setSplitBetween(people.map((p) => p.id))
+  }
 
   return (
     <div className="bg-white rounded-xl p-6 mb-6 shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5">
@@ -9,7 +74,7 @@ function ExpenseForm() {
         💸 Add Expense
       </h2>
 
-      <form>
+      <form onSubmit={onSubmit}>
         <div className="mb-4">
           <label
             htmlFor="description"
@@ -22,6 +87,8 @@ function ExpenseForm() {
             type="text"
             placeholder="What was the expense for?"
             className="w-full px-3 py-2 border-2 border-gray-200 rounded-md text-base transition-colors focus:outline-none focus:border-indigo-500"
+            value={description}
+            onChange={(e)=>setDescription(e.target.value)}
           />
         </div>
 
@@ -39,6 +106,8 @@ function ExpenseForm() {
               step="0.01"
               placeholder="0.00"
               className="w-full px-3 py-2 border-2 border-gray-200 rounded-md text-base transition-colors focus:outline-none focus:border-indigo-500"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
             />
           </div>
 
@@ -53,6 +122,8 @@ function ExpenseForm() {
               id="date"
               type="date"
               className="w-full px-3 py-2 border-2 border-gray-200 rounded-md text-base transition-colors focus:outline-none focus:border-indigo-500"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
             />
           </div>
         </div>
@@ -67,11 +138,13 @@ function ExpenseForm() {
           <select
             id="paidBy"
             className="w-full px-3 py-2 border-2 border-gray-200 rounded-md text-base transition-colors focus:outline-none focus:border-indigo-500 cursor-pointer"
+            value={paidBy}
+            onChange={(e) => setPaidBy(e.target.value)}
           >
             <option value="">Select person...</option>
             {people.map((person) => (
-              <option key={person} value={person}>
-                {person}
+              <option key={person.id} value={person.id}>
+                {person.name}
               </option>
             ))}
           </select>
@@ -88,6 +161,8 @@ function ExpenseForm() {
                 value="equal"
                 name="splitType"
                 className="cursor-pointer"
+                checked={splitType === 'equal'}
+                onChange={() => setSplitType('equal')}
               />
               <span>Equal Split</span>
             </label>
@@ -97,6 +172,8 @@ function ExpenseForm() {
                 value="custom"
                 name="splitType"
                 className="cursor-pointer"
+                checked={splitType === 'custom'}
+                onChange={() => setSplitType('custom')}
               />
               <span>Custom Amounts</span>
             </label>
@@ -110,13 +187,29 @@ function ExpenseForm() {
           <div className="flex flex-col gap-2">
             {people.map((person) => (
               <div
-                key={person}
+                key={person.id}
                 className="flex items-center justify-between p-2 bg-gray-50 rounded mb-1"
               >
                 <label className="flex items-center gap-2 cursor-pointer px-1 py-1 rounded transition-colors hover:bg-gray-50">
-                  <input type="checkbox" className="cursor-pointer" />
-                  <span>{person}</span>
+                  
+                  
+                  <input type="checkbox" className="cursor-pointer" 
+                   checked={splitBetween.includes(person.id)}
+                    onChange={() => toggleSplit(person.id)}
+                  />
+                  <span>{person.name}</span>
                 </label>
+                {splitType === 'custom' && splitBetween.includes(person.id) && (
+                  <input
+                    type="text"
+                    placeholder="0.00"
+                    value={customMap[person.id] ?? ''}
+                    onChange={(e) =>
+                      setCustomMap((s) => ({ ...s, [person.id]: e.target.value }))
+                    }
+                    style={{ width: 90 }}
+                  />
+                )}
               </div>
             ))}
           </div>
