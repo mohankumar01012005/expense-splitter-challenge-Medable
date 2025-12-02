@@ -4,6 +4,10 @@ A clean, responsive, and fully functional group expense management application b
 
 This application helps groups (friends, roommates, travel groups, teams) record expenses and instantly see who owes whom.
 
+
+### Live : https://expense-splitter-challenge.vercel.app/
+
+
 ### ✨ Features
 ### 👥 People Management
 
