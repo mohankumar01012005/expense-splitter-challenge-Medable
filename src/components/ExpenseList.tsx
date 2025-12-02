@@ -34,8 +34,8 @@ function ExpenseList() {
   }
 
   return (
-    <div className="bg-white rounded-xl p-6 mb-6 shadow-lg transition-all hover:shadow-xl">
-      <h2 className="text-gray-700 mb-4 text-2xl border-b-2 border-gray-200 pb-2">📝 Expense History</h2>
+    <div className="bg-white rounded-xl p-4 sm:p-6 mb-6 shadow-lg transition-all hover:shadow-xl">
+      <h2 className="text-gray-700 mb-4 text-xl sm:text-2xl border-b-2 border-gray-200 pb-2">📝 Expense History</h2>
 
       {expenses.length === 0 ? (
         <p className="text-center text-gray-400 py-8 italic">No expenses added yet. Add your first expense to get started!</p>
@@ -47,17 +47,17 @@ function ExpenseList() {
 
             return (
               <div key={expense.id} className="bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
-                <div className="p-4 flex justify-between items-center">
-                  <div className="flex-1 pr-4">
-                    <h4 className="text-gray-800 mb-1 text-lg">{expense.description}</h4>
-                    <div className="flex gap-4 text-gray-600 text-sm">
+                <div className="p-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                  <div className="flex-1 ">
+                    <h4 className="text-gray-800 mb-1 text-base sm:text-lg">{expense.description}</h4>
+                    <div className="flex flex-col sm:flex-row gap-1 sm:gap-4 text-gray-600 text-xs sm:text-sm">
                       <span>{formatDate(expense.date)}</span>
                       <span>Paid by {nameFor(expense.paidBy)}</span>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-4">
-                    <div className="text-xl font-semibold text-gray-700">{formatCurrency(expense.amount)}</div>
+                  <div className="flex justify-between items-center sm:gap-4">
+                    <div className="text-lg sm:text-xl font-semibold text-gray-700">{formatCurrency(expense.amount)}</div>
 
                     <div className="flex items-center gap-2">
                      <button
@@ -78,7 +78,7 @@ function ExpenseList() {
                      <button
                         aria-label="Delete"
                         onClick={() => onDelete(expense.id)}
-                        className="bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700 transition-colors"
+                        className="bg-red-600 text-white px-2 sm:px-3 py-1 rounded-md hover:bg-red-700 transition-colors"
                       >
                         <span className="hidden sm:inline">Delete</span>
                         <span className="sm:hidden">🗑</span>
@@ -96,7 +96,7 @@ function ExpenseList() {
                   <div className="px-4 pb-4 pt-2 border-t border-gray-200 bg-white">
                     {/* Show split details */}
                     <div className="mb-3">
-                      <div className="font-medium text-gray-700 mb-2">Split Details {expense.splitType === 'custom' ? '(custom)' : '(equal)'}</div>
+                      <div className="font-medium text-gray-700 mb-2 text-sm sm:text-base">Split Details {expense.splitType === 'custom' ? '(custom)' : '(equal)'}</div>
 
                       <div className="space-y-2">
                         {expense.splitBetween.map((pid: string) => {
@@ -108,7 +108,7 @@ function ExpenseList() {
                           // If amounts are stored in cents, ensure display uses formatCurrency
                           const display = typeof amountNumber === 'number' ? formatCurrency(amountNumber) : formatCurrency(Number(amountNumber))
                           return (
-                            <div key={pid} className="flex justify-between items-center bg-gray-50 p-3 rounded">
+                            <div key={pid} className="flex justify-between items-center bg-gray-50 p-3 rounded text-sm sm:text-base">
                               <div className="text-gray-800">{personName}</div>
                               <div className="text-red-600 font-semibold">owes {display}</div>
                             </div>
@@ -121,7 +121,7 @@ function ExpenseList() {
                     <div className="pt-3 border-t border-gray-100 flex justify-end">
                       <button
                         onClick={() => onDelete(expense.id)}
-                        className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors "
+                        className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors text-sm"
                       >
                         🗑 Delete Expense
                       </button>
@@ -134,7 +134,7 @@ function ExpenseList() {
         </div>
       )}
 
-      <div className="text-center p-4 bg-gray-50 rounded-lg text-gray-700 mt-6">
+      <div className="text-center p-4 bg-gray-50 rounded-lg text-gray-700 mt-6 text-sm sm:text-base">
         <p>
           Total Expenses: <strong>{expenses.length}</strong>
         </p>
